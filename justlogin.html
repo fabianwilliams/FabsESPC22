@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>ESPC 22 Fabian Williams MGT Session</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='index.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+    <script src="https://unpkg.com/@microsoft/mgt@2.6.0/dist/bundle/mgt-loader.js"></script>
+    <mgt-msal2-provider
+    client-id="39f0bea2-acab-4ab3-940f-4621b5c7ff07"
+    scopes="User.Read,
+    User.ReadBasic.All,
+    Calendars.Read,
+    Files.Read,
+    Files.Read.All,
+    Sites.Read.All,
+    Tasks.Read,
+    Tasks.ReadWrite,
+    People.Read">
+</mgt-msal2-provider>
+
+<div>
+    <mgt-login />
+  </div>
+</body>
+</html>
