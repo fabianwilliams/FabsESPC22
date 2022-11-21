@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>My network</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="index.css" />
+
+    <script src="https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js"></script>
+    <script src="./env.js"></script>
+  </head>
+
+  <body>
+    <div class="grid">
+      <div class="title">
+        <h1>My network</h1>
+      </div>
+      <div class="login">
+        <mgt-login></mgt-login>
+      </div>
+      <div class="body">
+        <mgt-people show-max="20" show-presence>
+          <template data-type="default">
+            <div class="people">
+              <div data-for="person in people" class="person">
+                <div class="avatar">
+                  <mgt-get resource="/users/{{ person.id }}/presence">
+                    <template>
+                      <mgt-person
+                        person-details="{{ $parent.person }}"
+                        person-presence="{{ this }}"
+                        fetch-image
+                        show-presence
+                        avatar-size="large"
+                        person-card="hover"
+                      ></mgt-person>
+                    </template>
+                    <template data-type="error">
+                      <mgt-person
+                        person-details="{{ $parent.person }}"
+                        fetch-image
+                        avatar-size="large"
+                        person-card="hover"
+                      ></mgt-person>
+                    </template>
+                  </mgt-get>
+                </div>
+                <div class="name">{{person.displayName}}</div>
+                <div class="jobTitle">{{person.jobTitle}}</div>
+              </div>
+            </div>
+          </template>
+          <template data-type="loading"> Loading... </template>
+          <template data-type="no-data"> No people found. </template>
+        </mgt-people>
+      </div>
+    </div>
+    <script>
+      (() => {
+        let graphClient;
+
+        // set up auth
+        mgt.Providers.globalProvider = new mgt.Msal2Provider({
+          clientId: appId,
+          // define all permissions upfront so that we don't get additional prompts
+          scopes: [
+            "People.Read",
+            "User.Read",
+            "User.ReadBasic.All",
+            "Presence.Read.All",
+            "User.Read.All",
+            "People.Read.All",
+            "Mail.ReadBasic",
+            "Sites.Read.All"
+          ]
+        });
+
+        // show body when logged in
+        mgt.Providers.onProviderUpdated(() => {
+          document.querySelector(".body").style.display =
+            mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn
+              ? "block"
+              : "none";
+          graphClient = mgt.Providers.globalProvider.graph.client;
+        });
+      })();
+    </script>
+  </body>
+</html>

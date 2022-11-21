@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>One Productivity Hub</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="index.css" />
+
+    <script src="https://unpkg.com/@microsoft/mgt@2/dist/bundle/mgt-loader.js"></script>
+    <script src="./env.js"></script>
+  </head>
+  <body>
+    <div class="grid">
+      <div class="title">
+        <h1>My productivity hub</h1>
+      </div>
+      <div class="login">
+        <mgt-login></mgt-login>
+      </div>
+      <div class="body">
+        <div class="features">
+          <div class="header">
+            <div class="title">
+              <div class="row">
+                <div class="column">
+                  <h3>My events</h3>
+                </div>
+                <div class="column">
+                  <h3>My tasks</h3>
+                </div>
+                <div class="column">
+                  <h3>My fcdiles</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" id="content">
+            <div class="column" id="mgt-col">
+              <mgt-agenda></mgt-agenda>
+            </div>
+            <div class="column" id="mgt-col">
+              <mgt-todo></mgt-todo>
+            </div>
+            <div class="column" id="mgt-col">
+              <mgt-file-list></mgt-file-list>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (() => {
+        let graphClient;
+
+        // set up auth
+        mgt.Providers.globalProvider = new mgt.Msal2Provider({
+          clientId: appId,
+          // define all permissions upfront so that we don't get additional prompts
+          scopes: [
+            "User.Read",
+            "User.ReadBasic.All",
+            "Calendars.Read",
+            "Files.Read",
+            "Files.Read.All",
+            "Sites.Read.All",
+            "Tasks.Read",
+            "Tasks.ReadWrite",
+            "People.Read",
+            "User.ReadBasic.All"
+          ]
+        });
+
+        // show body when logged in
+        mgt.Providers.onProviderUpdated(() => {
+          document.querySelector(".body").style.display =
+            mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn
+              ? "block"
+              : "none";
+          graphClient = mgt.Providers.globalProvider.graph.client;
+        });
+      })();
+    </script>
+  </body>
+</html>
