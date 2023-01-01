@@ -69,3 +69,42 @@ class Graph:
         self.user_client.post(request_url,
                             data=json.dumps(request_body),
                             headers={'Content-Type': 'application/json'})
+
+    def get_users(self):
+        self.ensure_graph_for_app_only_auth()
+
+        endpoint = '/users'
+        # Only request specific properties
+        select = 'displayName,id,mail'
+        # Get at most 25 results
+        top = 25
+        # Sort by display name
+        order_by = 'displayName'
+        request_url = f'{endpoint}?$select={select}&$top={top}&$orderBy={order_by}'
+
+        users_response = self.app_client.get(request_url)
+        return users_response.json()
+
+    def ensure_graph_for_app_only_auth(self):
+        if not hasattr(self, 'client_credential'):
+            client_id = self.settings['clientId']
+            tenant_id = self.settings['tenantId']
+            client_secret = self.settings['clientSecret']
+
+            self.client_credential = ClientSecretCredential(tenant_id, client_id, client_secret)
+
+        if not hasattr(self, 'app_client'):
+            self.app_client = GraphClient(credential=self.client_credential,
+                                        scopes=['https://graph.microsoft.com/.default'])
+
+    def get_appslist(self):
+        self.ensure_graph_for_app_only_auth()
+
+        endpoint = '/applications'
+        # Only request specific properties
+        #select = 'displayName,id,mail'
+        # append the count to the url
+        request_url = f'{endpoint}?$count=true'
+
+        applist_response = self.app_client.get(request_url)
+        return applist_response.json()

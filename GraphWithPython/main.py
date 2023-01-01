@@ -2,11 +2,11 @@ import configparser
 from Graph import Graph
 
 def main():
-    print('ESPC Fabian & Jada Williams Python Graph Session\n')
+    print('ESPC Fabian & Gabby Williams Python Graph Session\n')
 
     # Load settings
     config = configparser.ConfigParser()
-    config.read(['config.cfg', 'config.dev.cfg'])
+    config.read(['config.cfg'])
     azure_settings = config['azure']
 
     graph: Graph = Graph(azure_settings)
@@ -22,7 +22,6 @@ def main():
         print('2. List my inbox')
         print('3. Send mail')
         print('4. List users (requires app-only)')
-        print('5. Make a Graph call')
 
         try:
             choice = int(input())
@@ -39,8 +38,6 @@ def main():
             send_mail(graph)
         elif choice == 4:
             list_users(graph)
-        elif choice == 5:
-            make_graph_call(graph)
         else:
             print('Invalid choice!\n')
 
@@ -73,19 +70,24 @@ def send_mail(graph: Graph):
     # Send mail to the signed-in user
     # Get the user for their email address
     user = graph.get_user()
-    # user_email = user['mail'] or user['userPrincipalName']
-    user_email = 'jahmekyanbwoy@yahoo.com'
+    #user_email = user['mail'] or user['userPrincipalName']
+    user_email = 'gabbyg@fabster.onmicrosoft.com'
 
     graph.send_mail('Jada & Fabian says Hi from ESPC22', 'Hello Attendees in our Denmark Session!', user_email)
     print('Mail sent.\n')
 
 def list_users(graph: Graph):
-    # TODO
-    return
+    users_page = graph.get_users()
 
-def make_graph_call(graph: Graph):
-    # TODO
-    return
+    # Output each users's details
+    for user in users_page['value']:
+        print('User:', user['displayName'])
+        print('  ID:', user['id'])
+        print('  Email:', user['mail'])
+
+    # If @odata.nextLink is present
+    more_available = '@odata.nextLink' in users_page
+    print('\nMore users available?', more_available, '\n')
 
 # Run main
 main()
